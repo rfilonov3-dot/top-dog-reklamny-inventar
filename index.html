@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080808">
+  <title>TOP DOG — Рекламный инвентарь</title>
+  <meta name="description" content="Выберите рекламные форматы TOP DOG и рассчитайте стоимость размещения.">
+  <style>
+    :root{--ink:#0a0a0a;--paper:#f4f4f0;--line:#bdbdb8;--muted:#696966;--white:#fff;--shadow:0 18px 60px rgba(0,0,0,.16)}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif;padding-bottom:144px}
+    button,input{font:inherit}
+    .hero{min-height:58vh;background:var(--ink);color:var(--white);display:flex;flex-direction:column;justify-content:space-between;padding:28px clamp(20px,5vw,72px) 44px}
+    .topline{display:flex;justify-content:space-between;align-items:center;text-transform:uppercase;letter-spacing:.14em;font-size:12px}
+    .brand{display:block;width:clamp(138px,17vw,220px);line-height:0}
+    .brand img{display:block;width:100%;height:auto}
+    h1{font-size:clamp(54px,10vw,148px);line-height:.82;letter-spacing:-.075em;text-transform:uppercase;margin:72px 0 28px;max-width:1100px}
+    .hero-bottom{display:flex;justify-content:space-between;gap:32px;align-items:end}
+    .hero-bottom p{margin:0;max-width:560px;color:#cfcfca;font-size:clamp(16px,2vw,22px);line-height:1.35}
+    .hero-bottom a{color:#fff;text-decoration:none;border-bottom:1px solid #fff;padding-bottom:4px;white-space:nowrap}
+    main{width:min(1180px,calc(100% - 40px));margin:0 auto}
+    .controls{display:flex;justify-content:space-between;gap:24px;align-items:center;padding:44px 0 28px;border-bottom:2px solid var(--ink)}
+    .controls h2{margin:0;text-transform:uppercase;font-size:clamp(28px,4vw,52px);letter-spacing:-.045em}
+    .switcher{display:flex;border:1px solid var(--ink);padding:4px;background:#fff}
+    .switcher button{border:0;background:transparent;padding:12px 18px;cursor:pointer;font-weight:700}
+    .switcher button[aria-pressed="true"]{background:var(--ink);color:#fff}
+    .category{padding:38px 0 14px}
+    .category-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:14px}
+    .category h3{margin:0;font-size:14px;letter-spacing:.16em;text-transform:uppercase}
+    .discount{font-size:13px;color:var(--muted)}
+    .service{border-top:1px solid var(--line)}
+    .service:last-child{border-bottom:1px solid var(--line)}
+    .service-toggle{width:100%;display:grid;grid-template-columns:46px 1fr auto;gap:16px;align-items:center;padding:21px 0;border:0;background:transparent;text-align:left;cursor:pointer;color:inherit}
+    .number{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+    .name{font-size:clamp(18px,2.2vw,27px);line-height:1.16;letter-spacing:-.025em}
+    .plus{font-size:28px;transition:transform .22s ease}
+    .service.open .plus{transform:rotate(45deg)}
+    .detail{display:grid;grid-template-rows:0fr;transition:grid-template-rows .28s ease}
+    .service.open .detail{grid-template-rows:1fr}
+    .detail-inner{overflow:hidden}
+    .detail-content{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end;padding:0 0 24px 62px}
+    .meta{font-size:13px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em}
+    .price{font-weight:900;font-size:clamp(28px,4vw,50px);letter-spacing:-.045em}
+    .price s{display:block;font-size:14px;font-weight:400;color:var(--muted);letter-spacing:0;margin-bottom:3px}
+    .choose{display:flex;align-items:center;gap:10px;border:1px solid var(--ink);background:#fff;padding:13px 17px;cursor:pointer;font-weight:700}
+    .choose.selected{background:var(--ink);color:#fff}
+    .choose .box{width:18px;height:18px;border:1px solid currentColor;display:grid;place-items:center}
+    .choose.selected .box:after{content:'✓';font-size:14px}
+    .custom{margin:42px 0 18px;background:var(--ink);color:#fff;padding:28px;display:flex;justify-content:space-between;gap:24px;align-items:center}
+    .custom h3{font-size:clamp(24px,3vw,38px);letter-spacing:-.04em;margin:0 0 8px}
+    .custom p{margin:0;color:#bfbfba}
+    .summary{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:2px solid var(--ink);z-index:20;box-shadow:var(--shadow)}
+    .summary-inner{width:min(1180px,calc(100% - 40px));margin:auto;display:grid;grid-template-columns:1fr auto auto;gap:30px;align-items:center;padding:18px 0}
+    .summary-label{text-transform:uppercase;font-size:12px;letter-spacing:.12em;color:var(--muted)}
+    .summary-count{font-weight:700;margin-top:4px}
+    .money{text-align:right}
+    .money small{display:block;color:var(--muted);font-size:12px;margin-bottom:3px}
+    .money strong{font-size:clamp(24px,4vw,42px);letter-spacing:-.045em}
+    .reset{border:0;border-bottom:1px solid var(--ink);background:transparent;padding:3px 0;cursor:pointer}
+    .empty{opacity:.55}
+    @media (max-width:700px){body{padding-bottom:170px}.hero{min-height:520px}.hero-bottom{align-items:start;flex-direction:column}.controls{align-items:start;flex-direction:column}.switcher{width:100%}.switcher button{flex:1}.service-toggle{grid-template-columns:32px 1fr auto}.detail-content{padding-left:48px;grid-template-columns:1fr}.choose{justify-self:start}.summary-inner{grid-template-columns:1fr auto;gap:12px}.summary-inner>.money:first-of-type{display:none}.custom{align-items:start;flex-direction:column}}
+    @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="topline"><a class="brand" href="#inventory" aria-label="TOP DOG"><img src="top-dog-logo.png" alt="TOP DOG"></a><div>Сентябрь 2026</div></div>
+    <h1>Рекламный<br>инвентарь</h1>
+    <div class="hero-bottom"><p>Выберите рекламные форматы, раскройте стоимость и соберите медиаплан. Итог пересчитывается автоматически.</p><a href="#inventory">Смотреть форматы ↓</a></div>
+  </header>
+  <main id="inventory">
+    <section class="controls" aria-label="Выбор пакета">
+      <h2>Выберите пакет</h2>
+      <div class="switcher"><button type="button" data-package="1" aria-pressed="true">1 турнир</button><button type="button" data-package="3" aria-pressed="false">3 турнира</button></div>
+    </section>
+    <div id="catalog"></div>
+    <section class="custom"><div><h3>Custom &amp; special projects</h3><p>Обсуждаются индивидуально на основании брифа партнёра.</p></div><div>Цена по запросу</div></section>
+  </main>
+  <aside class="summary" aria-live="polite"><div class="summary-inner">
+    <div><div class="summary-label">Ваш медиаплан</div><div class="summary-count empty" id="selectionCount">Ничего не выбрано</div><button class="reset" id="reset" type="button" hidden>Очистить выбор</button></div>
+    <div class="money"><small id="savingLabel">Без НДС</small><strong id="subtotal">0 ₽</strong></div>
+    <div class="money"><small>Итого с НДС 7%</small><strong id="total">0 ₽</strong></div>
+  </div></aside>
+  <script>
+    const services=[
+      {id:'olv',cat:'DIGITAL',one:'Интеграция OLV ролика в 4 выпуска боёв',three:'Интеграция OLV ролика в 12 выпусков боёв',note:'Производство уникального OLV ролика по брифу партнёра обсуждается индивидуально',channels:'YouTube / Rutube / VK',price:1596000,discount:.15},
+      {id:'midroll',cat:'DIGITAL',one:'Уникальный графический мидролл в 4 выпуска боёв',three:'Уникальный графический мидролл в 12 выпусков боёв',note:'Производство обсуждается индивидуально',channels:'YouTube / Rutube / VK',price:1064000,discount:.15},
+      {id:'plate',cat:'DIGITAL',one:'Графическая плашка с логотипом и оффером партнёра в выпуске (10 сек.)',three:'Графическая плашка с логотипом и оффером партнёра в выпуске (10 сек.)',note:'Не более 15% площади кадра',channels:'YouTube / Rutube / VK',price:638300,discount:.15},
+      {id:'social',cat:'DIGITAL',one:'Пост + репост в сторис в социальных сетях TOP DOG',three:'3 поста + репосты в сторис в социальных сетях TOP DOG',note:'Период размещения: 1 месяц и 1 сутки соответственно',channels:'Telegram / VK',price:319150,discount:.15},
+      {id:'host',cat:'TV + OTT',one:'Устная интеграция от ведущего в прямом эфире (3 шт.)',three:'Устная интеграция от ведущего в прямом эфире',channels:'YouTube / Rutube / VK · TV · Офлайн',price:425530,discount:.10},
+      {id:'led',cat:'TV + OTT',one:'Ротация партнёрского логотипа на LED-экранах / медиакубе',three:'Ротация партнёрского логотипа на LED-экранах / медиакубе',channels:'YouTube / Rutube / VK · TV · Офлайн',price:1595745,discount:.10},
+      {id:'bonus',cat:'TV + OTT',one:'Вручение брендированного бонус-чека бойцу номиналом 100 000 ₽ (3 шт.)',three:'Вручение брендированного бонус-чека бойцу номиналом 100 000 ₽',channels:'YouTube / Rutube / VK · TV · Офлайн',price:372350,discount:.10},
+      {id:'apron-center',cat:'OFFLINE',one:'Логотип партнёра на центральном фартуке ринга со стороны ведущего',three:'Логотип партнёра на центральном фартуке ринга со стороны ведущего',channels:'YouTube / Rutube / VK · TV · Офлайн',price:1595745,discount:.08},
+      {id:'apron-corner',cat:'OFFLINE',one:'Логотип партнёра на фартуке ринга в углу бойца',three:'Логотип партнёра на фартуке ринга в углу бойца',channels:'YouTube / Rutube / VK · TV · Офлайн',price:1063830,discount:.08},
+      {id:'canvas',cat:'OFFLINE',one:'Логотип на настиле ринга (2 логотипа)',three:'Логотип на настиле ринга (2 логотипа)',channels:'YouTube / Rutube / VK · TV · Офлайн',price:1063830,discount:.08},
+      {id:'promo',cat:'OFFLINE',one:'Промоутеры партнёра на арене + корнер партнёра в фойе',three:'Промоутеры партнёра на арене + корнер партнёра в фойе',channels:'Офлайн',price:319150,discount:.08},
+      {id:'leaflets',cat:'OFFLINE',one:'Размещение рекламных листовок на креслах трибун',three:'Размещение рекламных листовок на креслах трибун',channels:'Офлайн',price:319150,discount:.08},
+      {id:'bands',cat:'OFFLINE',one:'Логотип партнёра / QR-код на браслетах фанзоны (1000 единиц)',three:'Логотип партнёра / QR-код на браслетах фанзоны (1000 единиц)',channels:'Офлайн',price:159575,discount:.08},
+      {id:'cube-video',cat:'OFFLINE',one:'Рекламный видеоролик партнёра на медиакубе во время паузы',three:'Рекламный видеоролик партнёра на медиакубе во время паузы',channels:'Офлайн',price:106380,discount:.08}
+    ];
+    const categories=['DIGITAL','TV + OTT','OFFLINE'];
+    const selected=new Set();let pack=1;
+    const money=n=>new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:0}).format(Math.round(n));
+    const itemPrice=s=>pack===1?s.price:s.price*3*(1-s.discount);
+    function render(){
+      document.getElementById('catalog').innerHTML=categories.map(cat=>{
+        const rows=services.filter(s=>s.cat===cat);const disc=rows[0].discount*100;
+        return `<section class="category"><div class="category-head"><h3>${cat}</h3><div class="discount">${pack===3?`Скидка ${disc}% включена`:pack+' турнир'}</div></div>${rows.map((s,i)=>`<article class="service" data-id="${s.id}"><button class="service-toggle" type="button" aria-expanded="false"><span class="number">${String(services.indexOf(s)+1).padStart(2,'0')}</span><span class="name">${pack===1?s.one:s.three}</span><span class="plus">+</span></button><div class="detail"><div class="detail-inner"><div class="detail-content"><div><div class="meta">${s.channels}${s.note?' · '+s.note:''}</div><div class="price">${pack===3?`<s>${money(s.price*3)}</s>`:''}${money(itemPrice(s))}</div></div><button type="button" class="choose ${selected.has(s.id)?'selected':''}" data-select="${s.id}"><span class="box"></span><span>${selected.has(s.id)?'Выбрано':'Выбрать услугу'}</span></button></div></div></div></article>`).join('')}</section>`
+      }).join('');
+      bind();updateTotal();
+    }
+    function bind(){
+      document.querySelectorAll('.service-toggle').forEach(btn=>btn.addEventListener('click',()=>{const row=btn.closest('.service');row.classList.toggle('open');btn.setAttribute('aria-expanded',row.classList.contains('open'))}));
+      document.querySelectorAll('[data-select]').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();const id=btn.dataset.select;selected.has(id)?selected.delete(id):selected.add(id);btn.classList.toggle('selected');btn.querySelector('span:last-child').textContent=selected.has(id)?'Выбрано':'Выбрать услугу';updateTotal()}));
+    }
+    function updateTotal(){
+      const chosen=services.filter(s=>selected.has(s.id));const subtotal=chosen.reduce((sum,s)=>sum+itemPrice(s),0);const total=subtotal*1.07;const full=chosen.reduce((sum,s)=>sum+s.price*pack,0);const saving=full-subtotal;
+      document.getElementById('subtotal').textContent=money(subtotal);document.getElementById('total').textContent=money(total);
+      const count=document.getElementById('selectionCount');count.textContent=chosen.length?`${chosen.length} ${chosen.length===1?'услуга':chosen.length<5?'услуги':'услуг'}`:'Ничего не выбрано';count.classList.toggle('empty',!chosen.length);
+      document.getElementById('reset').hidden=!chosen.length;document.getElementById('savingLabel').textContent=pack===3&&saving>0?`Без НДС · экономия ${money(saving)}`:'Без НДС';
+    }
+    document.querySelectorAll('[data-package]').forEach(btn=>btn.addEventListener('click',()=>{pack=Number(btn.dataset.package);document.querySelectorAll('[data-package]').forEach(b=>b.setAttribute('aria-pressed',b===btn));render()}));
+    document.getElementById('reset').addEventListener('click',()=>{selected.clear();render()});render();
+  </script>
+</body>
+</html>
