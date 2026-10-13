@@ -58,7 +58,8 @@
     .money{text-align:right}
     .money small{display:block;color:var(--muted);font-size:12px;margin-bottom:3px}
     .money strong{font-size:clamp(24px,4vw,42px);letter-spacing:-.045em}
-    .reset{border:0;border-bottom:1px solid var(--ink);background:transparent;padding:3px 0;cursor:pointer}
+    .summary-actions{display:flex;gap:14px;align-items:center;margin-top:5px;flex-wrap:wrap}
+    .reset,.share{border:0;border-bottom:1px solid var(--ink);background:transparent;padding:3px 0;cursor:pointer;color:var(--ink)}
     .empty{opacity:.55}
     @media (max-width:700px){body{padding-bottom:170px}.hero{min-height:520px}.hero-bottom{align-items:start;flex-direction:column}.controls{align-items:start;flex-direction:column}.switcher{width:100%}.switcher button{flex:1}.service-toggle{grid-template-columns:32px 1fr auto}.detail-content{padding-left:48px;grid-template-columns:1fr}.choose{justify-self:start}.summary-inner{grid-template-columns:1fr auto;gap:12px}.summary-inner>.money:first-of-type{display:none}.custom{align-items:start;flex-direction:column}}
     @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
@@ -79,7 +80,7 @@
     <section class="custom"><div><h3>Custom &amp; special projects</h3><p>Обсуждаются индивидуально на основании брифа партнёра.</p></div><div>Цена по запросу</div></section>
   </main>
   <aside class="summary" aria-live="polite"><div class="summary-inner">
-    <div><div class="summary-label">Ваш медиаплан</div><div class="summary-count empty" id="selectionCount">Ничего не выбрано</div><button class="reset" id="reset" type="button" hidden>Очистить выбор</button></div>
+    <div><div class="summary-label">Ваш медиаплан</div><div class="summary-count empty" id="selectionCount">Ничего не выбрано</div><div class="summary-actions"><button class="reset" id="reset" type="button" hidden>Очистить выбор</button><button class="share" id="share" type="button">Скопировать ссылку</button></div></div>
     <div class="money"><small id="savingLabel">Без НДС</small><strong id="subtotal">0 ₽</strong></div>
     <div class="money"><small>Итого с НДС 7%</small><strong id="total">0 ₽</strong></div>
   </div></aside>
@@ -101,7 +102,11 @@
       {id:'cube-video',cat:'OFFLINE',one:'Рекламный видеоролик партнёра на медиакубе во время паузы',three:'Рекламный видеоролик партнёра на медиакубе во время паузы',channels:'Офлайн',price:106380,discount:.08}
     ];
     const categories=['DIGITAL','TV + OTT','OFFLINE'];
-    const selected=new Set();let pack=1;
+    const params=new URLSearchParams(location.search);
+    const requestedPack=Number(params.get('package'));
+    const packFromUrl=requestedPack===3?3:1;
+    const validIds=new Set(services.map(s=>s.id));
+    const selected=new Set((params.get('services')||'').split(',').filter(id=>validIds.has(id)));let pack=packFromUrl;
     const money=n=>new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:0}).format(Math.round(n));
     const itemPrice=s=>pack===1?s.price:s.price*3*(1-s.discount);
     function render(){
@@ -121,8 +126,17 @@
       const count=document.getElementById('selectionCount');count.textContent=chosen.length?`${chosen.length} ${chosen.length===1?'услуга':chosen.length<5?'услуги':'услуг'}`:'Ничего не выбрано';count.classList.toggle('empty',!chosen.length);
       document.getElementById('reset').hidden=!chosen.length;document.getElementById('savingLabel').textContent=pack===3&&saving>0?`Без НДС · экономия ${money(saving)}`:'Без НДС';
     }
+    function shareUrl(){
+      const url=new URL(location.href);url.search='';url.hash='inventory';url.searchParams.set('package',pack);if(selected.size)url.searchParams.set('services',[...selected].join(','));return url.toString();
+    }
+    async function copyShareLink(){
+      const button=document.getElementById('share');const original=button.textContent;
+      try{await navigator.clipboard.writeText(shareUrl());button.textContent='Ссылка скопирована'}catch{window.prompt('Скопируйте ссылку:',shareUrl())}
+      setTimeout(()=>button.textContent=original,2200);
+    }
     document.querySelectorAll('[data-package]').forEach(btn=>btn.addEventListener('click',()=>{pack=Number(btn.dataset.package);document.querySelectorAll('[data-package]').forEach(b=>b.setAttribute('aria-pressed',b===btn));render()}));
-    document.getElementById('reset').addEventListener('click',()=>{selected.clear();render()});render();
+    document.querySelectorAll('[data-package]').forEach(btn=>btn.setAttribute('aria-pressed',Number(btn.dataset.package)===pack));
+    document.getElementById('reset').addEventListener('click',()=>{selected.clear();render()});document.getElementById('share').addEventListener('click',copyShareLink);render();
   </script>
 </body>
 </html>
