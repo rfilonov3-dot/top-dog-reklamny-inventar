@@ -10,13 +10,13 @@
     :root{--ink:#0a0a0a;--paper:#f4f4f0;--line:#bdbdb8;--muted:#696966;--white:#fff;--shadow:0 18px 60px rgba(0,0,0,.16)}
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
-    body{margin:0;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif;padding-bottom:144px}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif;padding-bottom:190px}
     button,input{font:inherit}
     .hero{min-height:58vh;background:var(--ink);color:var(--white);display:flex;flex-direction:column;justify-content:space-between;padding:28px clamp(20px,5vw,72px) 44px}
     .topline{display:flex;justify-content:space-between;align-items:center;text-transform:uppercase;letter-spacing:.14em;font-size:12px}
-    .brand{display:block;width:clamp(138px,17vw,220px);line-height:0}
+    .brand{display:block;width:clamp(260px,30vw,440px);line-height:0}
     .brand img{display:block;width:100%;height:auto}
-    h1{font-size:clamp(54px,10vw,148px);line-height:.82;letter-spacing:-.075em;text-transform:uppercase;margin:72px 0 28px;max-width:1100px}
+    h1{font-size:clamp(46px,7.5vw,112px);line-height:.86;letter-spacing:-.065em;text-transform:uppercase;margin:54px 0 28px;max-width:960px}
     .hero-bottom{display:flex;justify-content:space-between;gap:32px;align-items:end}
     .hero-bottom p{margin:0;max-width:560px;color:#cfcfca;font-size:clamp(16px,2vw,22px);line-height:1.35}
     .hero-bottom a{color:#fff;text-decoration:none;border-bottom:1px solid #fff;padding-bottom:4px;white-space:nowrap}
@@ -52,16 +52,21 @@
     .custom h3{font-size:clamp(24px,3vw,38px);letter-spacing:-.04em;margin:0 0 8px}
     .custom p{margin:0;color:#bfbfba}
     .summary{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:2px solid var(--ink);z-index:20;box-shadow:var(--shadow)}
-    .summary-inner{width:min(1180px,calc(100% - 40px));margin:auto;display:grid;grid-template-columns:1fr auto auto;gap:30px;align-items:center;padding:18px 0}
+    .summary-inner{width:min(1180px,calc(100% - 40px));margin:auto;display:grid;grid-template-columns:minmax(190px,.65fr) minmax(260px,1.35fr) auto auto;gap:24px;align-items:center;padding:14px 0}
     .summary-label{text-transform:uppercase;font-size:12px;letter-spacing:.12em;color:var(--muted)}
     .summary-count{font-weight:700;margin-top:4px}
+    .selected-list{display:grid;gap:5px;max-height:104px;overflow:auto;padding-right:8px}
+    .selected-item{display:flex;justify-content:space-between;gap:14px;font-size:12px;line-height:1.25;border-bottom:1px solid #deded9;padding-bottom:4px}
+    .selected-item span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .selected-item strong{white-space:nowrap}
+    .selected-empty{font-size:12px;color:var(--muted)}
     .money{text-align:right}
     .money small{display:block;color:var(--muted);font-size:12px;margin-bottom:3px}
     .money strong{font-size:clamp(24px,4vw,42px);letter-spacing:-.045em}
     .summary-actions{display:flex;gap:14px;align-items:center;margin-top:5px;flex-wrap:wrap}
     .reset,.share{border:0;border-bottom:1px solid var(--ink);background:transparent;padding:3px 0;cursor:pointer;color:var(--ink)}
     .empty{opacity:.55}
-    @media (max-width:700px){body{padding-bottom:170px}.hero{min-height:520px}.hero-bottom{align-items:start;flex-direction:column}.controls{align-items:start;flex-direction:column}.switcher{width:100%}.switcher button{flex:1}.service-toggle{grid-template-columns:32px 1fr auto}.detail-content{padding-left:48px;grid-template-columns:1fr}.choose{justify-self:start}.summary-inner{grid-template-columns:1fr auto;gap:12px}.summary-inner>.money:first-of-type{display:none}.custom{align-items:start;flex-direction:column}}
+    @media (max-width:700px){body{padding-bottom:250px}.hero{min-height:520px}.brand{width:min(76vw,330px)}h1{font-size:clamp(42px,14vw,72px);margin-top:42px}.hero-bottom{align-items:start;flex-direction:column}.controls{align-items:start;flex-direction:column}.switcher{width:100%}.switcher button{flex:1}.service-toggle{grid-template-columns:32px 1fr auto}.detail-content{padding-left:48px;grid-template-columns:1fr}.choose{justify-self:start}.summary-inner{grid-template-columns:1fr auto;gap:10px}.selected-list{grid-column:1/-1;grid-row:1;max-height:78px}.summary-inner>div:first-child{grid-row:2}.summary-inner>.money:first-of-type{display:none}.summary-inner>.money:last-of-type{grid-row:2}.custom{align-items:start;flex-direction:column}}
     @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
   </style>
 </head>
@@ -81,6 +86,7 @@
   </main>
   <aside class="summary" aria-live="polite"><div class="summary-inner">
     <div><div class="summary-label">Ваш медиаплан</div><div class="summary-count empty" id="selectionCount">Ничего не выбрано</div><div class="summary-actions"><button class="reset" id="reset" type="button" hidden>Очистить выбор</button><button class="share" id="share" type="button">Скопировать ссылку</button></div></div>
+    <div class="selected-list" id="selectedList"><div class="selected-empty">Выбранные услуги появятся здесь</div></div>
     <div class="money"><small id="savingLabel">Без НДС</small><strong id="subtotal">0 ₽</strong></div>
     <div class="money"><small>Итого с НДС 7%</small><strong id="total">0 ₽</strong></div>
   </div></aside>
@@ -124,6 +130,7 @@
       const chosen=services.filter(s=>selected.has(s.id));const subtotal=chosen.reduce((sum,s)=>sum+itemPrice(s),0);const total=subtotal*1.07;const full=chosen.reduce((sum,s)=>sum+s.price*pack,0);const saving=full-subtotal;
       document.getElementById('subtotal').textContent=money(subtotal);document.getElementById('total').textContent=money(total);
       const count=document.getElementById('selectionCount');count.textContent=chosen.length?`${chosen.length} ${chosen.length===1?'услуга':chosen.length<5?'услуги':'услуг'}`:'Ничего не выбрано';count.classList.toggle('empty',!chosen.length);
+      document.getElementById('selectedList').innerHTML=chosen.length?chosen.map(s=>`<div class="selected-item"><span>${pack===1?s.one:s.three}</span><strong>${money(itemPrice(s))}</strong></div>`).join(''):'<div class="selected-empty">Выбранные услуги появятся здесь</div>';
       document.getElementById('reset').hidden=!chosen.length;document.getElementById('savingLabel').textContent=pack===3&&saving>0?`Без НДС · экономия ${money(saving)}`:'Без НДС';
     }
     function shareUrl(){
