@@ -26,6 +26,16 @@
     .switcher{display:flex;border:1px solid var(--ink);padding:4px;background:#fff}
     .switcher button{border:0;background:transparent;padding:12px 18px;cursor:pointer;font-weight:700}
     .switcher button[aria-pressed="true"]{background:var(--ink);color:#fff}
+    .full-plan{margin:28px 0 10px;border:2px solid var(--ink);background:#fff;padding:24px;scroll-margin-top:20px}
+    .full-plan[hidden]{display:none}
+    .full-plan-head{display:flex;justify-content:space-between;gap:20px;align-items:end;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:10px}
+    .full-plan h3{margin:2px 0 0;text-transform:uppercase;font-size:clamp(24px,3vw,38px);letter-spacing:-.04em}
+    .full-plan-pack{font-size:13px;color:var(--muted)}
+    .full-plan-item{display:grid;grid-template-columns:1fr auto;gap:20px;padding:13px 0;border-bottom:1px solid var(--line)}
+    .full-plan-item strong{white-space:nowrap}
+    .full-plan-totals{display:grid;grid-template-columns:1fr auto;gap:8px 20px;padding-top:18px;align-items:baseline}
+    .full-plan-totals strong{text-align:right}
+    .full-plan-total{font-size:clamp(24px,3vw,38px)}
     .category{padding:38px 0 14px}
     .category-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:14px}
     .category h3{margin:0;font-size:14px;letter-spacing:.16em;text-transform:uppercase}
@@ -66,7 +76,7 @@
     .summary-actions{display:flex;gap:14px;align-items:center;margin-top:5px;flex-wrap:wrap}
     .reset,.share{border:0;border-bottom:1px solid var(--ink);background:transparent;padding:3px 0;cursor:pointer;color:var(--ink)}
     .empty{opacity:.55}
-    @media (max-width:700px){body{padding-bottom:250px}.hero{min-height:520px}.brand{width:min(76vw,330px)}h1{font-size:clamp(42px,14vw,72px);margin-top:42px}.hero-bottom{align-items:start;flex-direction:column}.controls{align-items:start;flex-direction:column}.switcher{width:100%}.switcher button{flex:1}.service-toggle{grid-template-columns:32px 1fr auto}.detail-content{padding-left:48px;grid-template-columns:1fr}.choose{justify-self:start}.summary-inner{grid-template-columns:1fr auto;gap:10px}.selected-list{grid-column:1/-1;grid-row:1;max-height:78px}.summary-inner>div:first-child{grid-row:2}.summary-inner>.money:first-of-type{display:none}.summary-inner>.money:last-of-type{grid-row:2}.custom{align-items:start;flex-direction:column}}
+    @media (max-width:700px){body{padding-bottom:250px}.hero{min-height:520px}.brand{width:min(76vw,330px)}h1{font-size:clamp(42px,14vw,72px);margin-top:42px}.hero-bottom{align-items:start;flex-direction:column}.controls{align-items:start;flex-direction:column}.switcher{width:100%}.switcher button{flex:1}.full-plan{padding:18px}.full-plan-head{align-items:start;flex-direction:column}.full-plan-item{gap:12px;font-size:14px}.service-toggle{grid-template-columns:32px 1fr auto}.detail-content{padding-left:48px;grid-template-columns:1fr}.choose{justify-self:start}.summary-inner{grid-template-columns:1fr auto;gap:10px}.selected-list{grid-column:1/-1;grid-row:1;max-height:78px}.summary-inner>div:first-child{grid-row:2}.summary-inner>.money:first-of-type{display:none}.summary-inner>.money:last-of-type{grid-row:2}.custom{align-items:start;flex-direction:column}}
     @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
   </style>
 </head>
@@ -80,6 +90,11 @@
     <section class="controls" aria-label="Выбор пакета">
       <h2>Выберите пакет</h2>
       <div class="switcher"><button type="button" data-package="1" aria-pressed="true">1 турнир</button><button type="button" data-package="3" aria-pressed="false">3 турнира</button></div>
+    </section>
+    <section class="full-plan" id="plan" hidden>
+      <div class="full-plan-head"><div><div class="summary-label">Ваш выбранный медиаплан</div><h3>Выбранные услуги</h3></div><div class="full-plan-pack" id="fullPlanPack"></div></div>
+      <div id="fullPlanList"></div>
+      <div class="full-plan-totals"><span>Сумма без НДС</span><strong id="fullPlanSubtotal">0 ₽</strong><span>Итого с НДС 7%</span><strong class="full-plan-total" id="fullPlanTotal">0 ₽</strong></div>
     </section>
     <div id="catalog"></div>
     <section class="custom"><div><h3>Custom &amp; special projects</h3><p>Обсуждаются индивидуально на основании брифа партнёра.</p></div><div>Цена по запросу</div></section>
@@ -131,10 +146,13 @@
       document.getElementById('subtotal').textContent=money(subtotal);document.getElementById('total').textContent=money(total);
       const count=document.getElementById('selectionCount');count.textContent=chosen.length?`${chosen.length} ${chosen.length===1?'услуга':chosen.length<5?'услуги':'услуг'}`:'Ничего не выбрано';count.classList.toggle('empty',!chosen.length);
       document.getElementById('selectedList').innerHTML=chosen.length?chosen.map(s=>`<div class="selected-item"><span>${pack===1?s.one:s.three}</span><strong>${money(itemPrice(s))}</strong></div>`).join(''):'<div class="selected-empty">Выбранные услуги появятся здесь</div>';
+      const plan=document.getElementById('plan');plan.hidden=!chosen.length;document.getElementById('fullPlanPack').textContent=pack===3?'Пакет: 3 турнира':'Пакет: 1 турнир';
+      document.getElementById('fullPlanList').innerHTML=chosen.map((s,i)=>`<div class="full-plan-item"><span>${String(i+1).padStart(2,'0')} · ${pack===1?s.one:s.three}</span><strong>${money(itemPrice(s))}</strong></div>`).join('');
+      document.getElementById('fullPlanSubtotal').textContent=money(subtotal);document.getElementById('fullPlanTotal').textContent=money(total);
       document.getElementById('reset').hidden=!chosen.length;document.getElementById('savingLabel').textContent=pack===3&&saving>0?`Без НДС · экономия ${money(saving)}`:'Без НДС';
     }
     function shareUrl(){
-      const url=new URL(location.href);url.search='';url.hash='inventory';url.searchParams.set('package',pack);if(selected.size)url.searchParams.set('services',[...selected].join(','));return url.toString();
+      const url=new URL(location.href);url.search='';url.hash='plan';url.searchParams.set('package',pack);if(selected.size)url.searchParams.set('services',[...selected].join(','));return url.toString();
     }
     async function copyShareLink(){
       const button=document.getElementById('share');const original=button.textContent;
@@ -144,6 +162,7 @@
     document.querySelectorAll('[data-package]').forEach(btn=>btn.addEventListener('click',()=>{pack=Number(btn.dataset.package);document.querySelectorAll('[data-package]').forEach(b=>b.setAttribute('aria-pressed',b===btn));render()}));
     document.querySelectorAll('[data-package]').forEach(btn=>btn.setAttribute('aria-pressed',Number(btn.dataset.package)===pack));
     document.getElementById('reset').addEventListener('click',()=>{selected.clear();render()});document.getElementById('share').addEventListener('click',copyShareLink);render();
+    if(location.hash==='#plan'&&selected.size)requestAnimationFrame(()=>document.getElementById('plan').scrollIntoView());
   </script>
 </body>
 </html>
